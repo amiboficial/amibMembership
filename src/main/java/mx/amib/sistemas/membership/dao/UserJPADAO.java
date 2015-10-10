@@ -56,7 +56,7 @@ public class UserJPADAO implements UserDAO {
 		sort = this.filterSortParam(sort);
 		order = this.filterOrderParam(order);
 		
-		resultList = entityManager.createQuery(String.format("select u from User u where u.userName order by u.%s %s", sort, order), User.class)
+		resultList = entityManager.createQuery(String.format("select u from User u order by u.%s %s", sort, order), User.class)
 				.setMaxResults(max).setFirstResult(offset)
 				.getResultList();
 		
@@ -77,6 +77,8 @@ public class UserJPADAO implements UserDAO {
 		sort = this.filterSortParam(sort);
 		order = this.filterOrderParam(order);
 		
+		userName = this.filterUserNameParam(userName);
+		
 		resultList = entityManager.createQuery(String.format("select u from User u where u.userName like :userNameLike order by u.%s %s", sort, order), User.class)
 				.setParameter("userNameLike", userName + "%")
 				.setMaxResults(max).setFirstResult(offset)
@@ -86,6 +88,8 @@ public class UserJPADAO implements UserDAO {
 	}
 
 	public long countFindAllByUserNameLike(String userName) {
+		userName = this.filterUserNameParam(userName);
+		
 		return entityManager.createQuery("select count(u) from User u where u.userName like :userNameLike", Long.class)
 				.setParameter("userNameLike", userName + "%")
 				.getSingleResult().longValue();

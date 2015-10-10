@@ -65,7 +65,7 @@ public class User implements Serializable {
 	@Column(name="fh_createdate")
 	private Date createdDate;
 
-	@ManyToMany
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(
 			name = "t005_t_userinrole",
 			joinColumns={@JoinColumn(name="id_user", referencedColumnName="id_user")},

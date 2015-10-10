@@ -52,4 +52,17 @@ public class UserDAOTest {
 		assertEquals(count, 2);
 	}
 	
+	@Test
+	public void findAllTest(){
+		long count;
+		List<User> result;
+		
+		count = userDAO.countFindAll();
+		result = userDAO.findAll(MAX, OFFSET, sort, order);
+
+		System.out.println(count);
+		System.out.println(result);
+		
+		assertTrue(count > 0);
+	}
 }

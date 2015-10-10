@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import mx.amib.sistemas.membership.model.Role;
+import mx.amib.sistemas.membership.model.RoleId;
 
 @Repository(value="roleDAO")
 public class RoleJPADAO implements RoleDAO {
@@ -35,8 +36,11 @@ public class RoleJPADAO implements RoleDAO {
 		return entityManager.createQuery(COUNT_JPQL, Long.class).getSingleResult().longValue();
 	}
 
-	public Role get(long id) {
-		return entityManager.find(Role.class, id);
+	public Role get(long idApplication, long numberRole) {
+		RoleId roleId = new RoleId();
+		roleId.setIdApplication(idApplication);
+		roleId.setNumberRole(numberRole);
+		return entityManager.find(Role.class, roleId);
 	}
 
 	public List<Role> getAll() {
@@ -55,8 +59,8 @@ public class RoleJPADAO implements RoleDAO {
 		return role;
 	}
 
-	public void delete(long id) {
-		entityManager.remove(this.get(id));
+	public void delete(long idApplication, long numberRole) {
+		entityManager.remove(this.get(idApplication,numberRole));
 	}
 	
 	public Role getByIdApplicationAndNumberRole(long idApplication,

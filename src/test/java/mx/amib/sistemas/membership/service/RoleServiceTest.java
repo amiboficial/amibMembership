@@ -43,5 +43,18 @@ public class RoleServiceTest {
 		assertTrue(listT.size() > 0);
 	}
 	
+	@Test 
+	public void getTest(){
+		Role r;
+		long idApplication = 1;
+		long numberRole = 1;
+		
+		r = roleService.get(idApplication, numberRole);
+		
+		System.out.println(r);
+		
+		assertTrue(r.getIdApplication() == 1L && r.getNumberRole() == 1L);
+	}
+	
 	
 }

@@ -26,9 +26,9 @@ public class Application implements Serializable {
 	@Column(name="st_active")
 	private boolean isActive;
 	
-	@OneToMany(mappedBy="application")
+	@OneToMany(mappedBy="application", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private Set<Role> roles;
-	@OneToMany(mappedBy="application")
+	@OneToMany(mappedBy="application", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private Set<Path> paths;
 	
 	public long getId() {

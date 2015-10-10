@@ -34,8 +34,8 @@ public class RoleServiceImpl implements RoleService {
 		return roleDAO.getAllByIdApplication(idApplication);
 	}
 	
-	public Role get(long id) {
-		return roleDAO.get(id);
+	public Role get(long idApplication, long numberRole) {
+		return roleDAO.get(idApplication, numberRole);
 	}
 
 	@Transactional
@@ -72,7 +72,7 @@ public class RoleServiceImpl implements RoleService {
 		if(application.getUuid().compareToIgnoreCase(MEMBERSHIP_APP_UUID) == 0){
 			throw new NonValidDeleteOperationException();
 		}
-		roleDAO.getByIdApplicationAndNumberRole(idApplication, numberRole);
+		roleDAO.delete(idApplication, numberRole);
 	}
 	
 

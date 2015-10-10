@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import mx.amib.sistemas.membership.model.Path;
+import mx.amib.sistemas.membership.model.PathId;
 
 @Repository(value="pathDAO")
 public class PathJPADAO implements PathDAO {
@@ -22,8 +23,11 @@ public class PathJPADAO implements PathDAO {
 		return entityManager.createQuery("select count(p) from Path p", Long.class).getSingleResult().longValue();
 	}
 
-	public Path get(long id) {
-		return entityManager.find(Path.class, id);
+	public Path get(long idApplication, long numberPath) {
+		PathId pathId = new PathId();
+		pathId.setIdApplication(idApplication);
+		pathId.setNumberPath(numberPath);
+		return entityManager.find(Path.class, pathId);
 	}
 
 	public List<Path> getAll() {
@@ -42,8 +46,8 @@ public class PathJPADAO implements PathDAO {
 		return path;
 	}
 
-	public void delete(long id) {
-		entityManager.remove(this.get(id));
+	public void delete(long idApplication, long numberPath) {
+		entityManager.remove(this.get(idApplication,numberPath));
 	}
 
 }
