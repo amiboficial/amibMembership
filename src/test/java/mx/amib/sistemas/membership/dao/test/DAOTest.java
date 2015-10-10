@@ -61,7 +61,7 @@ public class DAOTest {
 	@Ignore 
 	@Test
 	public void testApplicationDaoFindByUuid(){
-		Application application = applicationDAO.findByUuid("30873f55-c21f-4589-aa66-883f3563xb34");
+		Application application = applicationDAO.getByUuid("30873f55-c21f-4589-aa66-883f3563xb34");
 		assertEquals(application,null);
 	}
 	

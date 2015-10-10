@@ -12,6 +12,6 @@ public interface ApplicationDAO {
 	public Application update(Application application);
 	public void delete(long id);
 	
-	public Application findByUuid(String uuid);
-	public long countFindByUuid(String uuid);
+	public Application getByUuid(String uuid);
+	public long countGetByUuid(String uuid);
 }

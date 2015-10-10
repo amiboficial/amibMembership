@@ -4,25 +4,30 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import mx.amib.sistemas.membership.dao.ApplicationDAO;
 import mx.amib.sistemas.membership.dao.RoleDAO;
+import mx.amib.sistemas.membership.model.Application;
 import mx.amib.sistemas.membership.model.Role;
-import mx.amib.sistemas.membership.service.exception.NonValidDeleteOperationException;
+import mx.amib.sistemas.membership.service.exception.*;
 
 @Service("roleService")
 public class RoleServiceImpl implements RoleService {
 
+	public static final String MEMBERSHIP_APP_UUID = "79449d33-cdb5-4bb1-82a3-4b7c95eabc32";
+	
 	@Autowired
 	private RoleDAO roleDAO;
+	@Autowired
+	private ApplicationDAO applicationDAO;
 	
 	public long count() {
-		// TODO Auto-generated method stub
-		return 0;
+		return roleDAO.count();
 	}
 
 	public List<Role> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return roleDAO.getAll();
 	}
 
 	public List<Role> getAllByIdApplication(long idApplication) {
@@ -30,22 +35,44 @@ public class RoleServiceImpl implements RoleService {
 	}
 	
 	public Role get(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return roleDAO.get(id);
 	}
 
-	public Role save(Role Role) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public Role save(Role role) throws NonValidSaveOperationException{
+		Application application;
+		
+		application = applicationDAO.get(role.getIdApplication());
+		role.setNumberRole( roleDAO.getNextRoleNumberSequence(application.getId()) );
+		//si es un rol de la aplicación "membership", no permite guardarlo
+		if(application.getUuid().compareToIgnoreCase(MEMBERSHIP_APP_UUID) == 0){
+			throw new NonValidSaveOperationException();
+		}
+		return roleDAO.save(role);
 	}
 
-	public Role update(Role Role) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public Role update(Role role) throws NonValidUpdateOperationException {
+		Application application;
+		
+		application = applicationDAO.get(role.getIdApplication());
+		//si es un rol de la aplicación "membership", no permite modificarlo
+		if(application.getUuid().compareToIgnoreCase(MEMBERSHIP_APP_UUID) == 0){
+			throw new NonValidUpdateOperationException();
+		}
+		return roleDAO.update(role);
 	}
 
+	@Transactional
 	public void delete(long idApplication, long numberRole) throws NonValidDeleteOperationException {
-		// TODO Auto-generated method stub		
+		Application application;
+		
+		application = applicationDAO.get(idApplication);
+		//si es un rol de la aplicación "membership", no permite el borrado
+		if(application.getUuid().compareToIgnoreCase(MEMBERSHIP_APP_UUID) == 0){
+			throw new NonValidDeleteOperationException();
+		}
+		roleDAO.getByIdApplicationAndNumberRole(idApplication, numberRole);
 	}
 	
 

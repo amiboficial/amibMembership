@@ -43,7 +43,8 @@
     <bean id="jpaAdapter"
 	class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
 	p:database="${jpa.database}"
-	p:showSql="${jpa.showSql}"/>
+	p:showSql="${jpa.showSql}"
+	p:databasePlatform="${hibernate.dialect}"/>
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
 	p:entityManagerFactory-ref="entityManagerFactory"/>

@@ -12,6 +12,19 @@ import mx.amib.sistemas.membership.model.Role;
 @Repository(value="roleDAO")
 public class RoleJPADAO implements RoleDAO {
 
+	private static final String COUNT_JPQL = "select count(r) from Role r";
+	private static final String GET_ALL_JPQL = "select r from Role r";
+	private static final String GET_BY_IDAPPLICATION_AND_NUMBERROLE_JPQL = 
+			"select r from Role r where r.idApplication = :idApplication and r.numberRole = :numberRole";
+	private static final String GET_ALL_BY_IDAPPLICATION_JPQL = 
+			"select r from Role r where r.idApplication = :idApplication";
+	private static final String GET_ALL_BY_IDUSER_JPQL = 
+			"select r from User u inner join u.roles r where u.id = :idUser";
+	private static final String GET_ALL_BY_USER_NAME_JQPL = 
+			"select r from User u inner join u.roles r where u.userName = :userName";
+	private static final String GET_NEXT_ROLE_NUMBER_SEQUENCE_JQPL = 
+			"select max(r.numberRole) from Role r where r.idApplication = :idApplication";
+	
 	protected EntityManager entityManager;
 	@PersistenceContext
 	public void setEntityManager(EntityManager entityManager) {
@@ -19,7 +32,7 @@ public class RoleJPADAO implements RoleDAO {
     }
 	
 	public long count() {
-		return entityManager.createQuery("select count(r) from Role r", Long.class).getSingleResult().longValue();
+		return entityManager.createQuery(COUNT_JPQL, Long.class).getSingleResult().longValue();
 	}
 
 	public Role get(long id) {
@@ -27,7 +40,7 @@ public class RoleJPADAO implements RoleDAO {
 	}
 
 	public List<Role> getAll() {
-		return entityManager.createQuery("select r from Role r", Role.class).getResultList();
+		return entityManager.createQuery(GET_ALL_JPQL, Role.class).getResultList();
 	}
 
 	public Role save(Role role) {
@@ -46,31 +59,38 @@ public class RoleJPADAO implements RoleDAO {
 		entityManager.remove(this.get(id));
 	}
 	
-	
+	public Role getByIdApplicationAndNumberRole(long idApplication,
+			long numberRole) {
+		return entityManager.createQuery(GET_BY_IDAPPLICATION_AND_NUMBERROLE_JPQL, Role.class)
+				.setParameter("idApplication", idApplication).setParameter("numberRole", numberRole)
+				.getSingleResult();
+	}
 	
 	public List<Role> getAllByIdApplication(long idApplication) {
-		return entityManager.createQuery("select r from Role r where r.idApplication = :idApplication", Role.class)
+		return entityManager.createQuery(GET_ALL_BY_IDAPPLICATION_JPQL, Role.class)
 				.setParameter("idApplication", idApplication)
 				.getResultList();
 	}
 	
 	public List<Role> getAllByIdUser(long idUser) {
-		return entityManager.createQuery("select r from User u inner join u.roles r where u.id = :idUser", Role.class)
+		return entityManager.createQuery(GET_ALL_BY_IDUSER_JPQL, Role.class)
 				.setParameter("idUser", idUser)
 				.getResultList();
 	}
 	
 	public List<Role> getAllByUserName(String userName) {
-		return entityManager.createQuery("select r from User u inner join u.roles r where u.userName = :userName", Role.class)
+		return entityManager.createQuery(GET_ALL_BY_USER_NAME_JQPL, Role.class)
 				.setParameter("userName", userName)
 				.getResultList();
 	}
 
 	public long getNextRoleNumberSequence(long idApplication) {
-		return entityManager.createQuery("select max(r.numberRole) from Role r where r.idApplication = :idApplication", Long.class)
+		return entityManager.createQuery(GET_NEXT_ROLE_NUMBER_SEQUENCE_JQPL, Long.class)
 				.setParameter("idApplication", idApplication)
 				.getSingleResult() + 1;
 	}
+
+	
 	
 
 }

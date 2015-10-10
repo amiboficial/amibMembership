@@ -7,6 +7,7 @@ import mx.amib.sistemas.membership.model.Role;
 import mx.amib.sistemas.membership.model.convert.RoleTransportConverter;
 import mx.amib.sistemas.membership.service.RoleService;
 import mx.amib.sistemas.membership.service.exception.NonValidDeleteOperationException;
+import mx.amib.sistemas.membership.service.exception.NonValidSaveOperationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,11 @@ public class ApplicationRolesRestfulController {
 	@Autowired
 	private RoleService roleService;
 	
+	@RequestMapping(value="/{idApplication}/roles/create", method = RequestMethod.GET)
 	public ResponseEntity<RoleTO> create(@PathVariable("idApplication") long idApplication){
 		RoleTO roleTO = new RoleTO();
 		roleTO.setIdApplication(idApplication);
-		return new ResponseEntity<RoleTO>( roleTO , HttpStatus.CREATED ); 
+		return new ResponseEntity<RoleTO>( roleTO , HttpStatus.OK ); 
 	}
 	
 	@RequestMapping(value="/{idApplication}/roles/getAll", method = RequestMethod.GET)
@@ -43,10 +45,12 @@ public class ApplicationRolesRestfulController {
 		
 		role = RoleTransportConverter.setValuesOnEntity(role, roleTO);
 		role.setIdApplication(idApplication);
-		
+		try{
 		role = roleService.save(role);
 		responseEntity = new ResponseEntity<RoleTO>( RoleTransportConverter.convertToTransport(role) , HttpStatus.CREATED );
-		
+		} catch (NonValidSaveOperationException nvse) {
+			return new ResponseEntity<RoleTO>( HttpStatus.NOT_ACCEPTABLE );
+		}
 		return responseEntity;
 	}
 	

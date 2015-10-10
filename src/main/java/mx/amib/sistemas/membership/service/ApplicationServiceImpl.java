@@ -33,7 +33,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	public Application save(Application application) throws UuidNonUniqueException {
-		if(applicationDAO.countFindByUuid(application.getUuid()) == 0)
+		if(applicationDAO.countGetByUuid(application.getUuid()) == 0)
 			application = applicationDAO.save(application);
 		else
 			throw new UuidNonUniqueException();

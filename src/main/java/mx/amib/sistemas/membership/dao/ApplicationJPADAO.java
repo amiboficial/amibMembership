@@ -45,13 +45,13 @@ public class ApplicationJPADAO implements ApplicationDAO {
 		entityManager.remove(this.get(id));
 	}
 
-	public Application findByUuid(String uuid) {
+	public Application getByUuid(String uuid) {
 		return entityManager.createQuery("select a from Application a where a.uuid = :uuid", Application.class)
 				.setParameter("uuid", uuid)
 				.getSingleResult();
 	}
 	
-	public long countFindByUuid(String uuid) {
+	public long countGetByUuid(String uuid) {
 		return entityManager.createQuery("select count(a) from Application a where a.uuid = :uuid", Long.class)
 				.getSingleResult()
 				.longValue();

@@ -15,6 +15,7 @@ public interface RoleDAO {
 	public void delete(long id);
 	
 	//métodos complementarios
+	public Role getByIdApplicationAndNumberRole(long idApplication, long numberRole);
 	public List<Role> getAllByIdApplication(long idApplication);
 	public List<Role> getAllByIdUser(long idUser);
 	public List<Role> getAllByUserName(String userName);
