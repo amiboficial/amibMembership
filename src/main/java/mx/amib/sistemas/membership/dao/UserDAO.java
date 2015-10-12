@@ -15,6 +15,7 @@ public interface UserDAO {
 	public void delete(long id);
 	
 	//métodos complementarios
+	public User getByUserName(String userName);
 	public List<User> findAll(int max, int offset, String sort, String order);
 	public long countFindAll();
 	public List<User> findAllByUserNameLike(int max, int offset, String sort, String order, String userName);

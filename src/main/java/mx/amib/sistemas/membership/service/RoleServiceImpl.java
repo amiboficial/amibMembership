@@ -3,6 +3,7 @@ package mx.amib.sistemas.membership.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import mx.amib.sistemas.membership.model.Application;
 import mx.amib.sistemas.membership.model.Role;
 import mx.amib.sistemas.membership.service.exception.*;
 
+@Scope("singleton")
 @Service("roleService")
 public class RoleServiceImpl implements RoleService {
 
@@ -30,10 +32,6 @@ public class RoleServiceImpl implements RoleService {
 		return roleDAO.getAll();
 	}
 
-	public List<Role> getAllByIdApplication(long idApplication) {
-		return roleDAO.getAllByIdApplication(idApplication);
-	}
-	
 	public Role get(long idApplication, long numberRole) {
 		return roleDAO.get(idApplication, numberRole);
 	}
@@ -43,7 +41,7 @@ public class RoleServiceImpl implements RoleService {
 		Application application;
 		
 		application = applicationDAO.get(role.getIdApplication());
-		role.setNumberRole( roleDAO.getNextRoleNumberSequence(application.getId()) );
+		role.setNumberRole( roleDAO.getNextNumberSeq(application.getId()) );
 		//si es un rol de la aplicación "membership", no permite guardarlo
 		if(application.getUuid().compareToIgnoreCase(MEMBERSHIP_APP_UUID) == 0){
 			throw new NonValidSaveOperationException();
@@ -75,5 +73,24 @@ public class RoleServiceImpl implements RoleService {
 		roleDAO.delete(idApplication, numberRole);
 	}
 	
+	public List<Role> getAllByIdApplication(long idApplication) {
+		return roleDAO.getAllByIdApplication(idApplication);
+	}
 
+	public List<Role> getAllByIdUser(long idUser) {
+		return roleDAO.getAllByIdUser(idUser);
+	}
+
+	public List<Role> getAllByIdUserAndUuidApplication(long idUser,
+			String uuidApplication) {
+		return roleDAO.getAllByIdUserAndUuidApplication(idUser, uuidApplication);
+	}
+
+	public List<Role> getAllByUserName(String userName) {
+		return roleDAO.getAllByUserName(userName);
+	}
+
+	public long getNextNumberSeq(long idApplication) {
+		return roleDAO.getNextNumberSeq(idApplication);
+	}
 }

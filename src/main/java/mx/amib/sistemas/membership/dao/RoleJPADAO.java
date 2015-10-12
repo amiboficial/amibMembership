@@ -21,6 +21,10 @@ public class RoleJPADAO implements RoleDAO {
 			"select r from Role r where r.idApplication = :idApplication";
 	private static final String GET_ALL_BY_IDUSER_JPQL = 
 			"select r from User u inner join u.roles r where u.id = :idUser";
+	private static final String GET_ALL_BY_IDUSER_AND_UUIDAPPLICATION_JPQL = 
+			"select r from User u inner join u.roles r where u.id = :idUser and r.application.uuid = :uuidApplication";
+	private static final String GET_ALL_BY_IDUSER_AND_IDAPPLICATION_JPQL =
+			"select r from User u inner join u.roles r where u.id = :idUser and r.application.id = :idApplication";
 	private static final String GET_ALL_BY_USER_NAME_JQPL = 
 			"select r from User u inner join u.roles r where u.userName = :userName";
 	private static final String GET_NEXT_ROLE_NUMBER_SEQUENCE_JQPL = 
@@ -82,19 +86,32 @@ public class RoleJPADAO implements RoleDAO {
 				.getResultList();
 	}
 	
+	public List<Role> getAllByIdUserAndUuidApplication(long idUser,
+			String uuidApplication) {
+		return entityManager.createQuery(GET_ALL_BY_IDUSER_AND_UUIDAPPLICATION_JPQL, Role.class)
+				.setParameter("idUser", idUser)
+				.setParameter("uuidApplication", uuidApplication)
+				.getResultList();
+	}
+
+	public List<Role> getAllByIdUserAndIdApplication(long idUser, long idApplication){
+		return entityManager.createQuery(GET_ALL_BY_IDUSER_AND_IDAPPLICATION_JPQL, Role.class)
+				.setParameter("idUser", idUser)
+				.setParameter("idApplication", idApplication)
+				.getResultList();
+	}
+	
 	public List<Role> getAllByUserName(String userName) {
 		return entityManager.createQuery(GET_ALL_BY_USER_NAME_JQPL, Role.class)
 				.setParameter("userName", userName)
 				.getResultList();
 	}
 
-	public long getNextRoleNumberSequence(long idApplication) {
+	public long getNextNumberSeq(long idApplication) {
 		return entityManager.createQuery(GET_NEXT_ROLE_NUMBER_SEQUENCE_JQPL, Long.class)
 				.setParameter("idApplication", idApplication)
 				.getSingleResult() + 1;
 	}
 
-	
-	
 
 }

@@ -9,6 +9,15 @@ public class PathRestrictionId implements Serializable {
 	private long numberRole;
 	private long numberPath;
 	
+	public PathRestrictionId(){
+	}
+	
+	public PathRestrictionId(long idApplication,long numberRole,long numberPath){
+		this.idApplication = idApplication;
+		this.numberRole = numberRole;
+		this.numberPath = numberPath;
+	}
+	
 	public long getIdApplication() {
 		return idApplication;
 	}

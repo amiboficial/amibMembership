@@ -23,7 +23,7 @@ public class RoleDAOTest {
 	
 	@Test
 	public void getNextRoleNumberSequence(){
-		long next = roleDAO.getNextRoleNumberSequence(1);
+		long next = roleDAO.getNextNumberSeq(1);
 		System.out.println("the next value is " + next);
 		assertTrue(next > 0);
 	}

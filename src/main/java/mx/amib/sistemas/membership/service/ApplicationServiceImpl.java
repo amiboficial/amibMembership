@@ -32,6 +32,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return applicationDAO.get(id);
 	}
 
+	@Transactional
 	public Application save(Application application) throws UuidNonUniqueException {
 		if(applicationDAO.countGetByUuid(application.getUuid()) == 0)
 			application = applicationDAO.save(application);
@@ -40,6 +41,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return application;
 	}
 
+	@Transactional
 	public Application update(Application application) throws UuidNonUniqueException {
 		return applicationDAO.update(application);
 	}

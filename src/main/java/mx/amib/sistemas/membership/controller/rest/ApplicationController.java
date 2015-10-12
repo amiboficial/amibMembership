@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/application")
-public class ApplicationRestfulController {
+public class ApplicationController {
 
 	@Autowired
 	private ApplicationService applicationService;

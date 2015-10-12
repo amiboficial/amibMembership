@@ -46,6 +46,11 @@ public class UserJPADAO implements UserDAO {
 		entityManager.remove(this.get(id));
 	}
 
+	public User getByUserName(String userName) {
+		return entityManager.createQuery("select u from User u where u.userName = :userName", User.class)
+				.setParameter("userName", userName)
+				.getSingleResult();
+	}
 	
 	public List<User> findAll(int max, int offset, String sort, String order) {
 		
@@ -141,5 +146,7 @@ public class UserJPADAO implements UserDAO {
 		}
 		return userName;
 	}
+
+	
 
 }

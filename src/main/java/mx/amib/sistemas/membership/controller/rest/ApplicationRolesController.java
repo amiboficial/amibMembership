@@ -8,6 +8,7 @@ import mx.amib.sistemas.membership.model.convert.RoleTransportConverter;
 import mx.amib.sistemas.membership.service.RoleService;
 import mx.amib.sistemas.membership.service.exception.NonValidDeleteOperationException;
 import mx.amib.sistemas.membership.service.exception.NonValidSaveOperationException;
+import mx.amib.sistemas.membership.service.exception.NonValidUpdateOperationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/application")
-public class ApplicationRolesRestfulController {
+public class ApplicationRolesController {
 	
 	@Autowired
 	private RoleService roleService;
@@ -46,14 +47,28 @@ public class ApplicationRolesRestfulController {
 		role = RoleTransportConverter.setValuesOnEntity(role, roleTO);
 		role.setIdApplication(idApplication);
 		try{
-		role = roleService.save(role);
-		responseEntity = new ResponseEntity<RoleTO>( RoleTransportConverter.convertToTransport(role) , HttpStatus.CREATED );
+			role = roleService.save(role);
+			responseEntity = new ResponseEntity<RoleTO>( RoleTransportConverter.convertToTransport(role) , HttpStatus.CREATED );
 		} catch (NonValidSaveOperationException nvse) {
-			return new ResponseEntity<RoleTO>( HttpStatus.NOT_ACCEPTABLE );
+			responseEntity = new ResponseEntity<RoleTO>( HttpStatus.NOT_ACCEPTABLE );
 		}
 		return responseEntity;
 	}
 	
+	@RequestMapping(value="/{idApplication}/roles/update", method = RequestMethod.POST)
+	public ResponseEntity<RoleTO> update(@PathVariable("idApplication") long idApplication, @RequestBody RoleTO roleTO){
+		Role role = roleService.get(idApplication, roleTO.getNumberRole());
+		ResponseEntity<RoleTO> responseEntity = null;
+		
+		role = RoleTransportConverter.setValuesOnEntity(role, roleTO);
+		try{
+			role = roleService.update(role);
+			responseEntity = new ResponseEntity<RoleTO>( RoleTransportConverter.convertToTransport(role) , HttpStatus.OK );
+		} catch (NonValidUpdateOperationException nvse) {
+			responseEntity = new ResponseEntity<RoleTO>( HttpStatus.NOT_ACCEPTABLE );
+		}
+		return responseEntity;
+	}
 	@RequestMapping(value="/{idApplication}/roles/delete/{numberRole}", method = RequestMethod.DELETE)
 	public ResponseEntity<Boolean> delete(@PathVariable("idApplication") long idApplication, @PathVariable("numberRole") long numberRole){
 		try{

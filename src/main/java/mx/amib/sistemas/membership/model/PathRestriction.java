@@ -56,5 +56,19 @@ public class PathRestriction implements Serializable {
 	public void setNumberPath(long numberPath) {
 		this.numberPath = numberPath;
 	}
+	public Path getPath() {
+		return path;
+	}
+	public void setPath(Path path) {
+		this.path = path;
+	}
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
+	}
    
+	
+	
 }
