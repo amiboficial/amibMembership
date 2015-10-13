@@ -5,10 +5,7 @@ import java.util.List;
 import mx.amib.sistemas.external.membership.*;
 import mx.amib.sistemas.membership.model.Path;
 import mx.amib.sistemas.membership.model.convert.PathTransportConverter;
-import mx.amib.sistemas.membership.model.convert.RoleTransportConverter;
 import mx.amib.sistemas.membership.service.*;
-import mx.amib.sistemas.membership.service.exception.NonValidDeleteOperationException;
-import mx.amib.sistemas.membership.service.exception.NonValidSaveOperationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

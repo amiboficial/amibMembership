@@ -16,4 +16,5 @@ public interface PathRestrictionDAO {
 	//métodos complementarios
 	public List<PathRestriction> getAllByIdApplication(long idApplication);
 	public List<PathRestriction> getAllByIdApplicationAndNumberRole(long idApplication, long numberRole);
+	public List<PathRestriction> getAllByIdApplicationAndNumberPath(long idApplication, long numberPath);
 }

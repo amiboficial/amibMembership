@@ -63,6 +63,15 @@ public class PathRestrictionJPADAO implements PathRestrictionDAO {
 				.getResultList();
 	}
 
+	@Override
+	public List<PathRestriction> getAllByIdApplicationAndNumberPath(
+			long idApplication, long numberPath) {
+		return entityManager.createQuery("select pr from PathRestriction pr where pr.idApplication = :idApplication and pr.numberPath = :numberPath", PathRestriction.class)
+				.setParameter("idApplication", idApplication)
+				.setParameter("numberPath", numberPath)
+				.getResultList();
+	}
+
 	
 
 }

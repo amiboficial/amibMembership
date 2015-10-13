@@ -1,11 +1,11 @@
 package mx.amib.sistemas.membership.service;
 
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.security.*;
-
-import javax.persistence.NoResultException;
 
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import mx.amib.sistemas.membership.dao.ApplicationDAO;
+import mx.amib.sistemas.membership.dao.PathRestrictionDAO;
+import mx.amib.sistemas.membership.dao.RoleDAO;
 import mx.amib.sistemas.membership.dao.UserDAO;
+import mx.amib.sistemas.membership.model.Path;
+import mx.amib.sistemas.membership.model.PathRestriction;
+import mx.amib.sistemas.membership.model.PathRestrictionId;
 import mx.amib.sistemas.membership.model.Role;
 import mx.amib.sistemas.membership.model.User;
 import mx.amib.sistemas.membership.service.exception.*;
@@ -22,11 +28,16 @@ import mx.amib.sistemas.membership.service.exception.*;
 @Service("userService")
 public class UserServiceImpl implements UserService{
 
-	private static final int MAX_ATTEMPTS = 10;
 	private static final String PASSWORD_FORMAT = "MD5";
 			
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private PathRestrictionDAO pathRestricionDAO;
+	@Autowired
+	private RoleDAO roleDAO;
+	@Autowired
+	private ApplicationDAO applicationDAO;
 	
 	public long count() {
 		return userDAO.count();
@@ -93,111 +104,49 @@ public class UserServiceImpl implements UserService{
 		return userDAO.countFindAllByUserNameLike(userName);
 	}
 
-	@Transactional
-	public boolean validateUserNameAndPassword(String userName, String password) throws BlockedUserException, NonApprovedUserException, WrongPasswordAlgorithm {
-		
-		boolean valid = false;
-		User user;
-		
-		String hashSaltedPwd;
-		
-		try{
-			user = this.getByUserName(userName);
-			hashSaltedPwd = user.getPasswordSalt() + password;
-			hashSaltedPwd = Hex.encodeHexString(MessageDigest.getInstance(user.getPasswordFormat()).digest( hashSaltedPwd.getBytes() ));
-			
-			if( user.isLockedOut() ){
-				throw new BlockedUserException();
-			}
-			if( user.getPassword().compareTo(hashSaltedPwd) == 0 ){
-				if(!user.isApproved()){
-					throw new NonApprovedUserException();
-				}
-				valid = true;
-				this.notifySuccessfulValidation(user);
-			}
-			else{
-				this.notifyFailedValidation(user);
-			}
-			
-		}
-		catch(NoResultException nre){
-			user = null;
-		}
-		catch(NoSuchAlgorithmException e) {
-			throw new WrongPasswordAlgorithm();
-		}
-		
-		return valid;
+	public List<Role> getRoles(long id, long idApplication) {
+		return roleDAO.getAllByIdUserAndIdApplication(id, idApplication);
 	}
 
-	@Transactional
-	public boolean validateUserNameAndPasswordAndApplication(String userName,
-			String password, String uuidApplication) throws BlockedUserException, NonApprovedUserException, NoApplicationRolesException, WrongPasswordAlgorithm {
+	public List<Path> getRestrictedPaths(long id, long idApplication) {
+		List<Role> userRolesInApplication;
+		List<PathRestriction> pathRestrictionsInApplication;
+		Map<PathRestrictionId,Integer> pathRestrictionCounting = new HashMap<PathRestrictionId,Integer>();
+		int totalPathRestrictionsInApplication = 0;
+		//long idApplication = 0;
+		List<Path> effectivePathRestrictions = new ArrayList<Path>();
 		
-		boolean valid = false;
-		User user;
+		//idApplication = applicationDAO.getByUuid(uuidApplication).getId();
+		pathRestrictionsInApplication = pathRestricionDAO.getAllByIdApplication(idApplication);
+		totalPathRestrictionsInApplication = pathRestrictionsInApplication.size();
 		
-		String hashSaltedPwd;
+		//setea el conteo de cada una de las restricciones 0
+		for(PathRestriction x : pathRestrictionsInApplication){
+			PathRestrictionId prid = new PathRestrictionId(x.getIdApplication(),x.getNumberRole(),x.getNumberPath());
+			pathRestrictionCounting.put(prid, 0);
+		}
 		
-		try{
-			user = this.getByUserName(userName);
-			hashSaltedPwd = user.getPasswordSalt() + password;
-			hashSaltedPwd = Hex.encodeHexString(MessageDigest.getInstance(user.getPasswordFormat()).digest( hashSaltedPwd.getBytes() ));
-			
-			if( user.isLockedOut() ){
-				throw new BlockedUserException();
-			}
-			if( user.getPassword().compareTo(hashSaltedPwd) == 0 ){
-				if(!user.isApproved()){
-					throw new NonApprovedUserException();
+		//obtiene los roles de usuario en la aplicación
+		userRolesInApplication = roleDAO.getAllByIdUserAndIdApplication(id, idApplication);
+		
+		//cuenta cada una de las restricciones del usuario contenidas por cada rol asignado
+		for(Role r : userRolesInApplication){
+			List<PathRestriction> pathRestrictionsInRol = pathRestricionDAO.getAllByIdApplicationAndNumberRole(idApplication, r.getNumberRole());
+			for(PathRestriction x : pathRestrictionsInRol){
+				PathRestrictionId prid = new PathRestrictionId(x.getIdApplication(),x.getNumberRole(),x.getNumberPath());
+				pathRestrictionCounting.put( prid, pathRestrictionCounting.get(prid) + 1 );
+				
+				//si el conteo alcanzo el "numero maximo"
+				//es decir, todos los roles de usuario restrigen el mismo path
+				//un solo rol que no contenga dicha restricción, no lo incluría en la cuenta
+				if(pathRestrictionCounting.get(prid) == totalPathRestrictionsInApplication){
+					effectivePathRestrictions.add(x.getPath());
 				}
 				
-				//Verifica que haya por lo menos un rol de la correspondiente aplicación
-				for(Role r : user.getRoles()){
-					if(r.getApplication().getUuid().compareToIgnoreCase(uuidApplication) == 0){
-						valid = true;
-						break;
-					}
-				}
-				if(valid)
-					this.notifySuccessfulValidation(user);
-				else
-					throw new NoApplicationRolesException();
-				
 			}
-			else{
-				this.notifyFailedValidation(user);
-			}
-			
-		}
-		catch(NoResultException nre){
-			user = null;
-		}
-		catch(NoSuchAlgorithmException e) {
-			throw new WrongPasswordAlgorithm();
 		}
 		
-		return valid;
-	}
-	
-	@Transactional
-	public void notifyFailedValidation(User user) {
-		user.setFailedAttempts( user.getFailedAttempts() + 1 );
-		user.setLastActivity( Calendar.getInstance().getTime() );
-		if(user.getFailedAttempts() >= MAX_ATTEMPTS){
-			user.setLockedOut(true);
-			user.setLastLockedOut( Calendar.getInstance().getTime() );
-		}
-		userDAO.update(user);
-	}
-
-	@Transactional
-	public void notifySuccessfulValidation(User user) {
-		user.setFailedAttempts( 0 );
-		user.setLastActivity( Calendar.getInstance().getTime() );
-		user.setLastLogin( Calendar.getInstance().getTime() );
-		userDAO.update(user);
+		return effectivePathRestrictions;
 	}
 
 }

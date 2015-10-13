@@ -1,6 +1,7 @@
 package mx.amib.sistemas.membership.controller.rest;
 
-import mx.amib.sistemas.membership.service.UserService;
+import mx.amib.sistemas.membership.model.User;
+import mx.amib.sistemas.membership.service.AuthenticationService;
 import mx.amib.sistemas.membership.service.exception.BlockedUserException;
 import mx.amib.sistemas.membership.service.exception.NoApplicationRolesException;
 import mx.amib.sistemas.membership.service.exception.NonApprovedUserException;
@@ -15,24 +16,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/membership")
-public class MembershipController {
-	
-	private static final String UUID_MEMBERSHIP_APP = "79449d33-cdb5-4bb1-82a3-4b7c95eabc32";
+@RequestMapping("/authentication")
+public class AuthenticationController {
 	
 	@Autowired
-	private UserService userService;
+	private AuthenticationService authenticationService;
 	
 	@RequestMapping(value="/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<AuthenticateResponseWrapper> authenticate(@RequestBody AuthenticateRequestWrapper arw){
 		
 		ResponseEntity<AuthenticateResponseWrapper> responseEntity;
 		AuthenticateResponseWrapper responseObj = new AuthenticateResponseWrapper();
-		boolean valid = false;
+		User user = null;
 		
 		try {
-			valid = userService.validateUserNameAndPasswordAndApplication(arw.getUserName(), arw.getCleanPassword(), UUID_MEMBERSHIP_APP);
-			responseObj.setValid(valid);
+			user = authenticationService.validateUserNameAndPasswordAndApplication(arw.getUserName(), arw.getCleanPassword(), arw.getUuidApplication());
+			responseObj.setValid(true);
+			responseObj.setGeneratedApiKey( authenticationService.generateApiKey(user) );
 			responseEntity = new ResponseEntity<AuthenticateResponseWrapper>( responseObj , HttpStatus.OK );
 		} catch (BlockedUserException e) {
 			responseObj.setValid(false);
@@ -51,15 +51,14 @@ public class MembershipController {
 			responseObj.setExceptionName(e.getClass().getSimpleName());
 			responseEntity = new ResponseEntity<AuthenticateResponseWrapper>( responseObj , HttpStatus.OK );
 		}
-		
 		return responseEntity;
 	}
-	
 }
 
 class AuthenticateRequestWrapper{
 	private String userName;
 	private String cleanPassword;
+	private String uuidApplication;
 	
 	public String getUserName() {
 		return userName;
@@ -73,11 +72,18 @@ class AuthenticateRequestWrapper{
 	public void setCleanPassword(String cleanPassword) {
 		this.cleanPassword = cleanPassword;
 	}
+	public String getUuidApplication() {
+		return uuidApplication;
+	}
+	public void setUuidApplication(String uuidApplication) {
+		this.uuidApplication = uuidApplication;
+	}
 
 }
 
 class AuthenticateResponseWrapper{
 	private boolean valid;
+	private String generatedApiKey;
 	private String exceptionName;
 	
 	public boolean getValid() {
@@ -86,11 +92,16 @@ class AuthenticateResponseWrapper{
 	public void setValid(boolean valid) {
 		this.valid = valid;
 	}
+	public String getGeneratedApiKey() {
+		return generatedApiKey;
+	}
+	public void setGeneratedApiKey(String generatedApiKey) {
+		this.generatedApiKey = generatedApiKey;
+	}
 	public String getExceptionName() {
 		return exceptionName;
 	}
 	public void setExceptionName(String exceptionName) {
 		this.exceptionName = exceptionName;
 	}
-	
 }

@@ -54,48 +54,5 @@ public class PathServiceImpl implements PathService {
 	public List<Path> getAllByIdApplication(long idApplication){
 		return pathDAO.getAllByIdApplication(idApplication);
 	}
-	
-	public List<Path> getUserInApplicationRestrictedPaths(long idUser,
-			String uuidApplication) {
-		
-		List<Role> userRolesInApplication;
-		List<PathRestriction> pathRestrictionsInApplication;
-		Map<PathRestrictionId,Integer> pathRestrictionCounting = new HashMap<PathRestrictionId,Integer>();
-		int totalPathRestrictionsInApplication = 0;
-		long idApplication = 0;
-		List<Path> effectivePathRestrictions = new ArrayList<Path>();
-		
-		idApplication = applicationDAO.getByUuid(uuidApplication).getId();
-		pathRestrictionsInApplication = pathRestricionDAO.getAllByIdApplication(idApplication);
-		totalPathRestrictionsInApplication = pathRestrictionsInApplication.size();
-		
-		//setea el conteo de cada una de las restricciones 0
-		for(PathRestriction x : pathRestrictionsInApplication){
-			PathRestrictionId prid = new PathRestrictionId(x.getIdApplication(),x.getNumberRole(),x.getNumberPath());
-			pathRestrictionCounting.put(prid, 0);
-		}
-		
-		//obtiene los roles de usuario en la aplicación
-		userRolesInApplication = roleDAO.getAllByIdUserAndIdApplication(idUser, idApplication);
-		
-		//cuenta cada una de las restricciones del usuario contenidas por cada rol asignado
-		for(Role r : userRolesInApplication){
-			List<PathRestriction> pathRestrictionsInRol = pathRestricionDAO.getAllByIdApplicationAndNumberRole(idApplication, r.getNumberRole());
-			for(PathRestriction x : pathRestrictionsInRol){
-				PathRestrictionId prid = new PathRestrictionId(x.getIdApplication(),x.getNumberRole(),x.getNumberPath());
-				pathRestrictionCounting.put( prid, pathRestrictionCounting.get(prid) + 1 );
-				
-				//si el conteo alcanzo el "numero maximo"
-				//es decir, todos los roles de usuario restrigen el mismo path
-				//un solo rol que no contenga dicha restricción, no lo incluría en la cuenta
-				if(pathRestrictionCounting.get(prid) == totalPathRestrictionsInApplication){
-					effectivePathRestrictions.add(x.getPath());
-				}
-				
-			}
-		}
-		
-		return effectivePathRestrictions;
-	}
 
 }
