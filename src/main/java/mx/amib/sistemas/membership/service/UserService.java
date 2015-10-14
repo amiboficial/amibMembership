@@ -20,6 +20,7 @@ public interface UserService {
 	public long countFindAll();
 	public List<User> findAllByUserNameLike(int max, int offset, String sort, String order, String userName);
 	public long countFindAllByUserNameLike(String userName);
+	public void updatePassword(long id, String cleanPassword) throws WrongPasswordAlgorithm;
 	
 	public List<Role> getRoles(long id, long idApplication);
 	public List<Path> getRestrictedPaths(long id, long idApplication);

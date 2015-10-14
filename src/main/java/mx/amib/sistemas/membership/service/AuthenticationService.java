@@ -12,4 +12,6 @@ public interface AuthenticationService {
 	public void notifyFailedValidation(User user);
 	public void notifySuccessfulValidation(User user);
 	public String generateApiKey(User user);
+	public boolean checkApiKey(String apiKey);
+	public boolean deleteApiKey(String apiKey);
 }

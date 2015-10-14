@@ -10,6 +10,7 @@ import mx.amib.sistemas.membership.service.exception.WrongPasswordAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,6 +52,15 @@ public class AuthenticationController {
 			responseObj.setExceptionName(e.getClass().getSimpleName());
 			responseEntity = new ResponseEntity<AuthenticateResponseWrapper>( responseObj , HttpStatus.OK );
 		}
+		return responseEntity;
+	}
+	
+	@RequestMapping(value="/invalidateKey/{apiKey}", method = RequestMethod.DELETE)
+	public ResponseEntity<Boolean> invalidateKey(@PathVariable("apiKey") String apiKey){
+		ResponseEntity<Boolean> responseEntity;
+		
+		responseEntity = new ResponseEntity<Boolean>( authenticationService.deleteApiKey(apiKey) , HttpStatus.OK );
+		
 		return responseEntity;
 	}
 }

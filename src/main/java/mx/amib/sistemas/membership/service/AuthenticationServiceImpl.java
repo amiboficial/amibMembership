@@ -175,5 +175,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		
 		return generatedKey;
 	}
+
+	/**
+	 * Revisa si la llave de API es válida
+	 * 
+	 * @param apiKey
+	 * @return true si la llave de API es válida
+	 */
+	public boolean checkApiKey(String apiKey){
+		boolean valid = false;
+		long expDt;
+		
+		//revisa que este contenida en el Map
+		if(this.generatedApiKeys.containsKey(apiKey)){
+			expDt = this.generatedApiKeys.get(apiKey);
+			//revisa que no haya expirado ya
+			if((expDt - Calendar.getInstance().getTimeInMillis()) > 0){
+				valid = true;
+			}
+			else
+				this.generatedApiKeys.remove(apiKey); //la borra del map si es que ya ha expirado
+		}
+		
+		return valid;
+	}
+	
+	/***
+	 * Borra la llave de API 
+	 * 
+	 * @param apiKey
+	 * @return true si es que la llave estaba almaceda y fue borrada
+	 */
+	public boolean deleteApiKey(String apiKey) {
+		boolean contains = this.generatedApiKeys.containsKey(apiKey);
+		
+		if(contains)
+			this.generatedApiKeys.remove(apiKey);
+		
+		return contains;
+	}
 	
 }

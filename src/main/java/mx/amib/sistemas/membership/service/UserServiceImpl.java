@@ -78,6 +78,24 @@ public class UserServiceImpl implements UserService{
 		return userDAO.update(user);
 	}
 
+	public void updatePassword(long id, String cleanPassword) throws WrongPasswordAlgorithm{
+		User user = null;
+		
+		user = this.get(id);
+		
+		user.setPasswordFormat(PASSWORD_FORMAT);
+		user.setPasswordSalt( UUID.randomUUID().toString().replace("-", "") );
+		cleanPassword = user.getPasswordSalt() + cleanPassword;
+		
+		try {
+			user.setPassword( Hex.encodeHexString(MessageDigest.getInstance(PASSWORD_FORMAT).digest(cleanPassword.getBytes())) );
+		} catch (NoSuchAlgorithmException e) {
+			throw new WrongPasswordAlgorithm();
+		}
+		
+		userDAO.save(user);
+	}
+	
 	@Transactional
 	public void delete(long id) {
 		userDAO.delete(id);
