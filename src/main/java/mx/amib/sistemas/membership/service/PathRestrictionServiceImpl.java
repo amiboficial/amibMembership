@@ -3,10 +3,14 @@ package mx.amib.sistemas.membership.service;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import mx.amib.sistemas.membership.dao.PathRestrictionDAO;
 import mx.amib.sistemas.membership.model.*;
 
+@Scope("singleton")
+@Service("pathRestrictionService")
 public class PathRestrictionServiceImpl implements PathRestrictionService {
 
 	@Autowired

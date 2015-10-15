@@ -5,9 +5,12 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.stereotype.Repository;
+
 import mx.amib.sistemas.membership.model.PathRestriction;
 import mx.amib.sistemas.membership.model.PathRestrictionId;
 
+@Repository(value="pathRestrictionDAO")
 public class PathRestrictionJPADAO implements PathRestrictionDAO {
 
 	protected EntityManager entityManager;
