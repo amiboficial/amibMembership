@@ -13,7 +13,7 @@ public class Application implements Serializable {
 	
 	@Id
 	@Column(name="id_application")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	@Column(name="tx_uuid")
 	private String uuid;

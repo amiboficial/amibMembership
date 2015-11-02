@@ -1,6 +1,7 @@
 package mx.amib.sistemas.membership.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -33,16 +34,21 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Transactional
-	public Application save(Application application) throws UuidNonUniqueException {
-		if(applicationDAO.countGetByUuid(application.getUuid()) == 0)
-			application = applicationDAO.save(application);
-		else
+	public Application save(Application application) throws UuidNonUniqueException, UsernameNonUniqueException {
+		if(application.getUuid() != null && applicationDAO.countGetByUuid(application.getUuid()) != 0)
 			throw new UuidNonUniqueException();
+		else if(applicationDAO.countGetByNameLowercase(application.getName().toLowerCase()) != 0)	
+			throw new UsernameNonUniqueException();
+		else {
+			application.setUuid(UUID.randomUUID().toString());
+			application.setNameLowercase(application.getName().toLowerCase());
+			application = applicationDAO.save(application);
+		}
 		return application;
 	}
 
 	@Transactional
-	public Application update(Application application) throws UuidNonUniqueException {
+	public Application update(Application application) throws UuidNonUniqueException, UsernameNonUniqueException {
 		return applicationDAO.update(application);
 	}
 

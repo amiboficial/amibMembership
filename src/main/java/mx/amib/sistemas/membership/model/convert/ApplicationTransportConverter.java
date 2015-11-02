@@ -20,6 +20,7 @@ public class ApplicationTransportConverter {
 		tobj.setUuid( obj.getUuid() );
 		tobj.setName( obj.getName() );
 		tobj.setNameLowercase( obj.getNameLowercase() );
+		tobj.setActive( obj.isActive() );
 		return tobj;
 	}
 	public static Application setValuesOnEntity(Application obj, ApplicationTO tobj){
@@ -27,6 +28,7 @@ public class ApplicationTransportConverter {
 		obj.setUuid( tobj.getUuid() );
 		obj.setName( tobj.getName() );
 		obj.setNameLowercase( tobj.getNameLowercase() );
+		obj.setActive( tobj.isActive() );
 		return obj;
 	}
 }

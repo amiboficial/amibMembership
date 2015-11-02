@@ -7,6 +7,9 @@ public class ApplicationTO {
 	private String name;
 	private String nameLowercase;
 	
+	private boolean isActive;
+	
+	
 	public long getId() {
 		return id;
 	}
@@ -33,5 +36,10 @@ public class ApplicationTO {
 		this.nameLowercase = nameLowercase;
 	}
 	
-	
+	public boolean isActive() {
+		return isActive;
+	}
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
 }

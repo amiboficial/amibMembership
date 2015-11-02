@@ -53,6 +53,14 @@ public class ApplicationJPADAO implements ApplicationDAO {
 	
 	public long countGetByUuid(String uuid) {
 		return entityManager.createQuery("select count(a) from Application a where a.uuid = :uuid", Long.class)
+				.setParameter("uuid", uuid)
+				.getSingleResult()
+				.longValue();
+	}
+
+	public long countGetByNameLowercase(String nameLowercase) {
+		return entityManager.createQuery("select count(a) from Application a where a.nameLowercase = :nameLowercase", Long.class)
+				.setParameter("nameLowercase", nameLowercase)
 				.getSingleResult()
 				.longValue();
 	}

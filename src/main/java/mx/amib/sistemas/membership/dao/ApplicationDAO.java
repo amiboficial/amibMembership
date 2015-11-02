@@ -16,4 +16,5 @@ public interface ApplicationDAO {
 	//métodos complementarios
 	public Application getByUuid(String uuid);
 	public long countGetByUuid(String uuid);
+	public long countGetByNameLowercase(String nameLowercase);
 }

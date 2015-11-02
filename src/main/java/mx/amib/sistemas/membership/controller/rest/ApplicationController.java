@@ -40,31 +40,23 @@ public class ApplicationController {
 		return new ResponseEntity<List<ApplicationTO>>( ares , HttpStatus.OK );
 	}
 	
-	@RequestMapping(value="/getAll/{id}", method = RequestMethod.GET)
+	@RequestMapping(value="/get/{id}", method = RequestMethod.GET)
 	public ResponseEntity<ApplicationTO> get(@PathVariable("id") Long id){
 		ApplicationTO applicationTO = ApplicationTransportConverter.convertToTransport(applicationService.get(id));
 		return new ResponseEntity<ApplicationTO>( applicationTO , HttpStatus.OK );
 	}
 	
 	@RequestMapping(value="/save", method = RequestMethod.POST)
-	public ResponseEntity<ApplicationTO> save(@RequestBody ApplicationTO applicationTO){
-		Application entToSave = ApplicationTransportConverter.setValuesOnEntity( applicationService.get(applicationTO.getId()), applicationTO );
-		try {
-			entToSave = applicationService.save(entToSave);
-		} catch (UuidNonUniqueException e) {
-			return new ResponseEntity<ApplicationTO>(HttpStatus.NOT_ACCEPTABLE);
-		}
+	public ResponseEntity<ApplicationTO> save(@RequestBody ApplicationTO applicationTO) throws UuidNonUniqueException, UsernameNonUniqueException{
+		Application entToSave = ApplicationTransportConverter.setValuesOnEntity( new Application() , applicationTO );
+		entToSave = applicationService.save(entToSave);
 		return new ResponseEntity<ApplicationTO>( ApplicationTransportConverter.convertToTransport(entToSave) , HttpStatus.CREATED );
 	}
 	
 	@RequestMapping(value="/update", method = RequestMethod.POST)
-	public ResponseEntity<ApplicationTO> update(@RequestBody ApplicationTO applicationTO){
+	public ResponseEntity<ApplicationTO> update(@RequestBody ApplicationTO applicationTO) throws UuidNonUniqueException, UsernameNonUniqueException{
 		Application entToUpd = ApplicationTransportConverter.setValuesOnEntity( applicationService.get(applicationTO.getId()), applicationTO );
-		try {
-			entToUpd = applicationService.update(entToUpd);
-		} catch (UuidNonUniqueException e) {
-			return new ResponseEntity<ApplicationTO>(HttpStatus.NOT_ACCEPTABLE);
-		}
+		entToUpd = applicationService.update(entToUpd);
 		return new ResponseEntity<ApplicationTO>( ApplicationTransportConverter.convertToTransport(entToUpd) , HttpStatus.OK );
 	}
 	

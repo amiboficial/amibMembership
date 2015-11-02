@@ -9,7 +9,7 @@ public interface ApplicationService {
 	public long count();
 	public List<Application> getAll();
 	public Application get(long id);
-	public Application save(Application application) throws UuidNonUniqueException;
-	public Application update(Application application) throws UuidNonUniqueException;
+	public Application save(Application application) throws UuidNonUniqueException, UsernameNonUniqueException;
+	public Application update(Application application) throws UuidNonUniqueException, UsernameNonUniqueException;
 	public void delete(long id) throws NonValidDeleteOperationException;
 }
