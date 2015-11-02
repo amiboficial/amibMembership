@@ -40,6 +40,12 @@ public class ApplicationController {
 		return new ResponseEntity<List<ApplicationTO>>( ares , HttpStatus.OK );
 	}
 	
+	@RequestMapping(value="/getAll/{id}", method = RequestMethod.GET)
+	public ResponseEntity<ApplicationTO> get(@PathVariable("id") Long id){
+		ApplicationTO applicationTO = ApplicationTransportConverter.convertToTransport(applicationService.get(id));
+		return new ResponseEntity<ApplicationTO>( applicationTO , HttpStatus.OK );
+	}
+	
 	@RequestMapping(value="/save", method = RequestMethod.POST)
 	public ResponseEntity<ApplicationTO> save(@RequestBody ApplicationTO applicationTO){
 		Application entToSave = ApplicationTransportConverter.setValuesOnEntity( applicationService.get(applicationTO.getId()), applicationTO );
