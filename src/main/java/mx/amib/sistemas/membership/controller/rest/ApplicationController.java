@@ -55,7 +55,7 @@ public class ApplicationController {
 	
 	@RequestMapping(value="/update", method = RequestMethod.POST)
 	public ResponseEntity<ApplicationTO> update(@RequestBody ApplicationTO applicationTO) throws UuidNonUniqueException, UsernameNonUniqueException{
-		Application entToUpd = ApplicationTransportConverter.setValuesOnEntity( applicationService.get(applicationTO.getId()), applicationTO );
+		Application entToUpd = ApplicationTransportConverter.setValuesOnEntityForUpdate( applicationService.get(applicationTO.getId()), applicationTO );
 		entToUpd = applicationService.update(entToUpd);
 		return new ResponseEntity<ApplicationTO>( ApplicationTransportConverter.convertToTransport(entToUpd) , HttpStatus.OK );
 	}

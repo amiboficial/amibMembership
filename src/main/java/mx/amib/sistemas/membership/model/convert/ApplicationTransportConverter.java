@@ -31,4 +31,12 @@ public class ApplicationTransportConverter {
 		obj.setActive( tobj.isActive() );
 		return obj;
 	}
+	public static Application setValuesOnEntityForUpdate(Application obj, ApplicationTO tobj){
+		//obj.setId( tobj.getId() );
+		//obj.setUuid( tobj.getUuid() );
+		obj.setName( tobj.getName() );
+		obj.setNameLowercase( tobj.getName().toLowerCase() );
+		obj.setActive( tobj.isActive() );
+		return obj;
+	}
 }

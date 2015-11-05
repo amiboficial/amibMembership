@@ -33,6 +33,12 @@ public class ApplicationPathsController {
 		return new ResponseEntity<List<PathTO>>(res,HttpStatus.OK);
 	}
 	
+	@RequestMapping(value="/{idApplication}/paths/get/{numberPath}", method = RequestMethod.GET)
+	public ResponseEntity<PathTO> get(@PathVariable("idApplication") long idApplication, @PathVariable("numberPath") long numberPath){
+		PathTO pathTO = PathTransportConverter.convertToTransport(pathService.get(idApplication,numberPath));
+		return new ResponseEntity<PathTO>( pathTO , HttpStatus.OK );
+	}
+	
 	@RequestMapping(value="/{idApplication}/paths/save", method = RequestMethod.POST)
 	public ResponseEntity<PathTO> save(@PathVariable("idApplication") long idApplication, @RequestBody PathTO pathTO){
 		Path path = new Path();

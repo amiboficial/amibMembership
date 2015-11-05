@@ -30,13 +30,19 @@ public class ApplicationRolesController {
 	public ResponseEntity<RoleTO> create(@PathVariable("idApplication") long idApplication){
 		RoleTO roleTO = new RoleTO();
 		roleTO.setIdApplication(idApplication);
-		return new ResponseEntity<RoleTO>( roleTO , HttpStatus.OK ); 
+		return new ResponseEntity<RoleTO>( roleTO , HttpStatus.CREATED ); 
 	}
 	
 	@RequestMapping(value="/{idApplication}/roles/getAll", method = RequestMethod.GET)
 	public ResponseEntity<List<RoleTO>> getAll(@PathVariable("idApplication") long idApplication){
 		List<RoleTO> res = RoleTransportConverter.convertToTranport(roleService.getAllByIdApplication(idApplication));
 		return new ResponseEntity<List<RoleTO>>( res , HttpStatus.OK );
+	}
+	
+	@RequestMapping(value="/{idApplication}/roles/get/{numberRole}", method = RequestMethod.GET)
+	public ResponseEntity<RoleTO> get(@PathVariable("idApplication") long idApplication, @PathVariable("numberRole") long numberRole){
+		RoleTO roleTO = RoleTransportConverter.convertToTransport(roleService.get(idApplication,numberRole));
+		return new ResponseEntity<RoleTO>( roleTO , HttpStatus.OK );
 	}
 	
 	@RequestMapping(value="/{idApplication}/roles/save", method = RequestMethod.POST)

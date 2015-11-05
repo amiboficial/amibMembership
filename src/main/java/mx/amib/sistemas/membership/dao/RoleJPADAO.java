@@ -108,9 +108,14 @@ public class RoleJPADAO implements RoleDAO {
 	}
 
 	public long getNextNumberSeq(long idApplication) {
-		return entityManager.createQuery(GET_NEXT_ROLE_NUMBER_SEQUENCE_JQPL, Long.class)
-				.setParameter("idApplication", idApplication)
-				.getSingleResult() + 1;
+		Long nextNumberSeq = entityManager.createQuery(GET_NEXT_ROLE_NUMBER_SEQUENCE_JQPL, Long.class)
+								.setParameter("idApplication", idApplication)
+								.getSingleResult();
+		
+		if(nextNumberSeq == null)
+			nextNumberSeq = 0L;
+		
+		return nextNumberSeq + 1;
 	}
 
 

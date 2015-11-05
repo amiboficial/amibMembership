@@ -57,9 +57,14 @@ public class PathJPADAO implements PathDAO {
 	}
 	
 	public long getNextNumberSeq(long idApplication){
-		return entityManager.createQuery("select max(p.numberPath) from Path p where p.idApplication = :idApplication", Long.class)
-				.setParameter("idApplication", idApplication)
-				.getSingleResult() + 1;
+		Long nextNumberSeq = entityManager.createQuery("select max(p.numberPath) from Path p where p.idApplication = :idApplication", Long.class)
+								.setParameter("idApplication", idApplication)
+								.getSingleResult();
+		
+		if(nextNumberSeq == null)
+			nextNumberSeq = 0L;
+		
+		return nextNumberSeq + 1;
 	}
 
 	
