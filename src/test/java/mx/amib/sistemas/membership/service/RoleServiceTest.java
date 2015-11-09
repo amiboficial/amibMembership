@@ -43,6 +43,7 @@ public class RoleServiceTest {
 		assertTrue(listT.size() > 0);
 	}
 	
+	@Ignore
 	@Test 
 	public void getTest(){
 		Role r;

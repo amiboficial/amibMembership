@@ -28,10 +28,6 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private ApplicationService applicationService;
-	@Autowired
-	private PathService pathService;
 	
 	@RequestMapping(value="/create", method = RequestMethod.GET)
 	public ResponseEntity<UserTO> create(){

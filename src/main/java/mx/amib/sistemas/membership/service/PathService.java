@@ -14,5 +14,7 @@ public interface PathService {
 	public void delete(long idApplication, long numberPath);
 	
 	public List<Path> getAllByIdApplication(long idApplication);
-
+	public List<Path> saveMultipleFromStringList(long idApplication, List<String> multiplePaths);
+	public void deleteMultiple(long idApplication, List<Long> numbersPath);
+	
 }

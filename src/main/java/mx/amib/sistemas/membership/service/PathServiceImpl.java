@@ -55,4 +55,28 @@ public class PathServiceImpl implements PathService {
 		return pathDAO.getAllByIdApplication(idApplication);
 	}
 
+	@Transactional
+	public List<Path> saveMultipleFromStringList(long idApplication, List<String> multiplePaths) {
+		List<Path> paths = new ArrayList<Path>();
+		
+		for(String strPath : multiplePaths){
+			Path p = new Path();
+			p.setIdApplication(idApplication);
+			p.setNumberPath( pathDAO.getNextNumberSeq(idApplication) );
+			p.setPath(strPath);
+			p.setPathLowercase(strPath.toLowerCase());
+			p = pathDAO.save(p);
+			paths.add(p);
+		}
+		
+		return paths;
+	}
+
+	@Transactional
+	public void deleteMultiple(long idApplication, List<Long> numbersPath) {
+		for(Long numberPath : numbersPath){
+			pathDAO.delete(idApplication, numberPath.longValue());
+		}
+	}
+
 }

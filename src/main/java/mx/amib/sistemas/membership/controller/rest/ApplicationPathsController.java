@@ -1,5 +1,6 @@
 package mx.amib.sistemas.membership.controller.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.amib.sistemas.external.membership.*;
@@ -74,5 +75,20 @@ public class ApplicationPathsController {
 //		} catch (NonValidDeleteOperationException nvde) {
 //			return new ResponseEntity<Boolean>( false , HttpStatus.NOT_ACCEPTABLE );
 //		}
+	}
+	
+	@RequestMapping(value="/{idApplication}/paths/saveMultipleFromStringList", method = RequestMethod.POST)
+	public ResponseEntity<List<Path>> saveMultipleFromStringList(@PathVariable("idApplication") long idApplication, @RequestBody List<String> strPaths){
+		List<Path> result = new ArrayList<Path>();
+		
+		result = pathService.saveMultipleFromStringList(idApplication, strPaths);
+		
+		return new ResponseEntity<List<Path>>( result , HttpStatus.OK );
+	}
+	
+	@RequestMapping(value="/{idApplication}/paths/deleteMultiple", method = RequestMethod.DELETE)
+	public ResponseEntity<Boolean> deleteMultiple(@PathVariable("idApplication") long idApplication, @RequestBody List<Long> numbersPath){
+		pathService.deleteMultiple(idApplication, numbersPath);
+		return new ResponseEntity<Boolean>( true , HttpStatus.OK );
 	}
 }

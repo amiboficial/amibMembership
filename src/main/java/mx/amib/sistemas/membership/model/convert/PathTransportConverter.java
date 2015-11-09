@@ -16,6 +16,8 @@ public class PathTransportConverter {
 	}
 	public static PathTO convertToTransport(Path obj){
 		PathTO tobj = new PathTO();
+		tobj.setIdApplication(obj.getIdApplication());
+		tobj.setNumberPath(obj.getNumberPath());
 		tobj.setPath( obj.getPath() );
 		tobj.setPathLowercase( obj.getPathLowercase() );
 		return tobj;
