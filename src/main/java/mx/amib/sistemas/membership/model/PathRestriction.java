@@ -25,7 +25,7 @@ public class PathRestriction implements Serializable {
 	@Column(name="seq_path")
 	private long numberPath;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumns({
 		@JoinColumn(name="id_application",referencedColumnName="id_application", insertable=false, updatable=false),
 		@JoinColumn(name="seq_path",referencedColumnName="seq_path", insertable=false, updatable=false)

@@ -1,12 +1,16 @@
 package mx.amib.sistemas.membership.service;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import mx.amib.sistemas.membership.dao.PathDAO;
 import mx.amib.sistemas.membership.dao.PathRestrictionDAO;
+import mx.amib.sistemas.membership.dao.RoleDAO;
 import mx.amib.sistemas.membership.model.*;
 
 @Scope("singleton")
@@ -15,6 +19,10 @@ public class PathRestrictionServiceImpl implements PathRestrictionService {
 
 	@Autowired
 	private PathRestrictionDAO pathRestrictionDAO;
+	@Autowired
+	private PathDAO pathDAO;
+	@Autowired
+	private RoleDAO roleDAO;
 	
 	@Override
 	public void save(long idApplication, long numRole, long numPath) {
@@ -31,29 +39,54 @@ public class PathRestrictionServiceImpl implements PathRestrictionService {
 	}
 
 	@Override
-	public List<Path> getAllByNumberRole(long idApplication, long numberRole) {
-		List<Path> paths = new ArrayList<Path>();
-		List<PathRestriction> restrictions = null;
+	@Transactional
+	public List<Path> getAllByNumberRole(long idApplication, long numberRole) {		
+		List<Path> restrictedPaths = new ArrayList<Path>();
 		
-		restrictions = pathRestrictionDAO.getAllByIdApplicationAndNumberRole(idApplication, numberRole);
-		for( PathRestriction x : restrictions ){
-			paths.add( x.getPath() );			
-		}
+		restrictedPaths = pathRestrictionDAO.getRestrictedPathsByIdApplicationAndNumberPath(idApplication, numberRole);
 		
-		return paths;
+		return restrictedPaths;
 	}
 
 	@Override
-	public List<Path> getAllByNumberPath(long idApplication, long numberPath) {
-		List<Path> paths = new ArrayList<Path>();
-		List<PathRestriction> restrictions = null;
+	@Transactional
+	public List<Role> getAllByNumberPath(long idApplication, long numberPath) {
+		List<Role> restrictedRoles = new ArrayList<Role>();
 		
-		restrictions = pathRestrictionDAO.getAllByIdApplicationAndNumberRole(idApplication, numberPath);
-		for( PathRestriction x : restrictions ){
-			paths.add( x.getPath() );			
+		restrictedRoles = pathRestrictionDAO.getRestrictedRolesByIdApplicationAndNumberPath(idApplication, numberPath);
+		
+		return restrictedRoles;
+	}
+
+	@Transactional
+	public void saveChangesByNumberRole(long idApplication, long numberRole, Set<Long> restrictedNumbersPath) {
+		//borra todas las restricciones
+		pathRestrictionDAO.deleteAllByNumberRole(idApplication, numberRole);
+		//crea nuevas restricciones con base en la lista de numeros de paths indicada 
+		for(Long numberPath : restrictedNumbersPath){
+			PathRestriction pr = new PathRestriction();
+			pr.setIdApplication(idApplication);
+			pr.setNumberRole(numberRole);
+			pr.setNumberPath(numberPath);
+
+			pathRestrictionDAO.save(pr);
 		}
-		
-		return paths;
+	}
+
+	@Transactional
+	public void saveChangesByNumberPath(long idApplication, long numberPath, Set<Long> restrictedNumbersRole) {
+		// TODO Auto-generated method stub
+		//borra todas las restricciones
+		pathRestrictionDAO.deleteAllByNumberPath(idApplication, numberPath);
+		//crea nuevas restricciones con base en la lista de numeros de paths indicada 
+		for(Long numberRole : restrictedNumbersRole){
+			PathRestriction pr = new PathRestriction();
+			pr.setIdApplication(idApplication);
+			pr.setNumberRole(numberRole);
+			pr.setNumberPath(numberPath);
+
+			pathRestrictionDAO.save(pr);
+		}
 	}
 
 }

@@ -4,11 +4,14 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
+import mx.amib.sistemas.membership.model.Path;
 import mx.amib.sistemas.membership.model.PathRestriction;
 import mx.amib.sistemas.membership.model.PathRestrictionId;
+import mx.amib.sistemas.membership.model.Role;
 
 @Repository(value="pathRestrictionDAO")
 public class PathRestrictionJPADAO implements PathRestrictionDAO {
@@ -66,7 +69,13 @@ public class PathRestrictionJPADAO implements PathRestrictionDAO {
 				.getResultList();
 	}
 
-	@Override
+	public List<Path> getRestrictedPathsByIdApplicationAndNumberPath(long idApplication, long numberRole){
+		return entityManager.createQuery("select p from PathRestriction pr inner join pr.path p where pr.idApplication = :idApplication and pr.numberRole = :numberRole", Path.class)
+				.setParameter("idApplication", idApplication)
+				.setParameter("numberRole", numberRole)
+				.getResultList();
+	}
+	
 	public List<PathRestriction> getAllByIdApplicationAndNumberPath(
 			long idApplication, long numberPath) {
 		return entityManager.createQuery("select pr from PathRestriction pr where pr.idApplication = :idApplication and pr.numberPath = :numberPath", PathRestriction.class)
@@ -74,7 +83,24 @@ public class PathRestrictionJPADAO implements PathRestrictionDAO {
 				.setParameter("numberPath", numberPath)
 				.getResultList();
 	}
-
 	
+	public List<Role> getRestrictedRolesByIdApplicationAndNumberPath(long idApplication, long numberPath) {
+		return entityManager.createQuery("select r from PathRestriction pr inner join pr.role r where pr.idApplication = :idApplication and pr.numberPath = :numberPath", Role.class)
+				.setParameter("idApplication", idApplication)
+				.setParameter("numberPath", numberPath)
+				.getResultList();
+	}
+
+	public void deleteAllByNumberRole(long idApplication, long numberRole) {
+		Query q = entityManager.createQuery("delete from PathRestriction pr where pr.idApplication = :idApplication and pr.numberRole = :numberRole");
+		q.setParameter("idApplication", idApplication).setParameter("numberRole", numberRole);
+		q.executeUpdate();
+	}
+
+	public void deleteAllByNumberPath(long idApplication, long numberPath) {
+		Query q = entityManager.createQuery("delete from PathRestriction pr where pr.idApplication = :idApplication and pr.numberPath = :numberPath");
+		q.setParameter("idApplication", idApplication).setParameter("numberPath", numberPath);
+		q.executeUpdate();
+	}
 
 }
