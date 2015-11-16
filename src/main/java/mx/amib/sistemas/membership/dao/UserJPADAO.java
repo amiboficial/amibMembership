@@ -3,6 +3,7 @@ package mx.amib.sistemas.membership.dao;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
@@ -47,9 +48,18 @@ public class UserJPADAO implements UserDAO {
 	}
 
 	public User getByUserName(String userName) {
-		return entityManager.createQuery("select u from User u where u.userName = :userName", User.class)
-				.setParameter("userName", userName)
-				.getSingleResult();
+		User result;
+		
+		try{
+			result = entityManager.createQuery("select u from User u where u.userName = :userName", User.class)
+					.setParameter("userName", userName)
+					.getSingleResult();
+		}
+		catch(NoResultException e){
+			result = null;
+		}
+		
+		return result;
 	}
 	
 	public List<User> findAll(int max, int offset, String sort, String order) {

@@ -53,20 +53,20 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Transactional
-	public User save(User user) throws WrongPasswordAlgorithm {
+	public User save(User user) throws UsernameNonUniqueException, NoSuchAlgorithmException {
 		//el campo password se codificará
 		String hashSaltedPwd;
 		
+		user.setUserNameLowercase(user.getUserName().toLowerCase());
+		user.setEmailLowercase(user.getEmail().toLowerCase());
 		user.setPasswordFormat(PASSWORD_FORMAT);
 		user.setUuid( UUID.randomUUID().toString() );
 		user.setPasswordSalt( UUID.randomUUID().toString().replace("-", "") );
-		
 		hashSaltedPwd = user.getPasswordSalt() + user.getPassword();
+		user.setPassword( Hex.encodeHexString(MessageDigest.getInstance(PASSWORD_FORMAT).digest(hashSaltedPwd.getBytes())) );
 		
-		try {
-			user.setPassword( Hex.encodeHexString(MessageDigest.getInstance(PASSWORD_FORMAT).digest(hashSaltedPwd.getBytes())) );
-		} catch (NoSuchAlgorithmException e) {
-			throw new WrongPasswordAlgorithm();
+		if(this.getByUserName(user.getUserName())!=null){
+			throw new UsernameNonUniqueException();
 		}
 		
 		return userDAO.save(user);
@@ -78,20 +78,17 @@ public class UserServiceImpl implements UserService{
 		return userDAO.update(user);
 	}
 
-	public void updatePassword(long id, String cleanPassword) throws WrongPasswordAlgorithm{
+	public void updatePassword(long id, String cleanPassword) throws NoSuchAlgorithmException{
 		User user = null;
 		
 		user = this.get(id);
 		
+		user.setUserNameLowercase(user.getUserName().toLowerCase());
+		user.setEmailLowercase(user.getEmail().toLowerCase());
 		user.setPasswordFormat(PASSWORD_FORMAT);
 		user.setPasswordSalt( UUID.randomUUID().toString().replace("-", "") );
 		cleanPassword = user.getPasswordSalt() + cleanPassword;
-		
-		try {
-			user.setPassword( Hex.encodeHexString(MessageDigest.getInstance(PASSWORD_FORMAT).digest(cleanPassword.getBytes())) );
-		} catch (NoSuchAlgorithmException e) {
-			throw new WrongPasswordAlgorithm();
-		}
+		user.setPassword( Hex.encodeHexString(MessageDigest.getInstance(PASSWORD_FORMAT).digest(cleanPassword.getBytes())) );
 		
 		userDAO.save(user);
 	}

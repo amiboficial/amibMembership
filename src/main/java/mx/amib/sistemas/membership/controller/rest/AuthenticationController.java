@@ -5,7 +5,8 @@ import mx.amib.sistemas.membership.service.AuthenticationService;
 import mx.amib.sistemas.membership.service.exception.BlockedUserException;
 import mx.amib.sistemas.membership.service.exception.NoApplicationRolesException;
 import mx.amib.sistemas.membership.service.exception.NonApprovedUserException;
-import mx.amib.sistemas.membership.service.exception.WrongPasswordAlgorithm;
+
+import java.security.NoSuchAlgorithmException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class AuthenticationController {
 			responseObj.setValid(false);
 			responseObj.setExceptionName(e.getClass().getSimpleName());
 			responseEntity = new ResponseEntity<AuthenticateResponseWrapper>( responseObj , HttpStatus.OK );
-		} catch (WrongPasswordAlgorithm e) {
+		} catch (NoSuchAlgorithmException e) {
 			responseObj.setValid(false);
 			responseObj.setExceptionName(e.getClass().getSimpleName());
 			responseEntity = new ResponseEntity<AuthenticateResponseWrapper>( responseObj , HttpStatus.OK );

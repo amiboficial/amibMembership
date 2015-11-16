@@ -22,7 +22,6 @@ import mx.amib.sistemas.membership.model.User;
 import mx.amib.sistemas.membership.service.exception.BlockedUserException;
 import mx.amib.sistemas.membership.service.exception.NoApplicationRolesException;
 import mx.amib.sistemas.membership.service.exception.NonApprovedUserException;
-import mx.amib.sistemas.membership.service.exception.WrongPasswordAlgorithm;
 
 @Scope("singleton")
 @Service("authenticationService")
@@ -39,7 +38,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private UserDAO userDAO;
 	
 	@Transactional
-	public User validateUserNameAndPassword(String userName, String password) throws BlockedUserException, NonApprovedUserException, WrongPasswordAlgorithm {
+	public User validateUserNameAndPassword(String userName, String password) throws BlockedUserException, NonApprovedUserException, NoSuchAlgorithmException {
 		
 		boolean valid = false;
 		User user = null;
@@ -69,9 +68,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		catch(NoResultException nre){
 			valid = false;
 		}
-		catch(NoSuchAlgorithmException e) {
-			throw new WrongPasswordAlgorithm();
-		}
 		
 		if(!valid)
 			user = null;
@@ -81,7 +77,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Transactional
 	public User validateUserNameAndPasswordAndApplication(String userName,
-			String password, String uuidApplication) throws BlockedUserException, NonApprovedUserException, NoApplicationRolesException, WrongPasswordAlgorithm {
+			String password, String uuidApplication) throws BlockedUserException, NonApprovedUserException, NoApplicationRolesException, NoSuchAlgorithmException {
 		
 		boolean valid = false;
 		User user = null;
@@ -121,9 +117,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		}
 		catch(NoResultException nre){
 			valid = false;
-		}
-		catch(NoSuchAlgorithmException e) {
-			throw new WrongPasswordAlgorithm();
 		}
 		
 		if(!valid)

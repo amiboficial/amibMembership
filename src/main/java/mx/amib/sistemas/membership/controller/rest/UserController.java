@@ -1,5 +1,7 @@
 package mx.amib.sistemas.membership.controller.rest;
 
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import mx.amib.sistemas.external.membership.PathTO;
@@ -10,7 +12,7 @@ import mx.amib.sistemas.membership.model.convert.*;
 import mx.amib.sistemas.membership.service.ApplicationService;
 import mx.amib.sistemas.membership.service.PathService;
 import mx.amib.sistemas.membership.service.UserService;
-import mx.amib.sistemas.membership.service.exception.WrongPasswordAlgorithm;
+import mx.amib.sistemas.membership.service.exception.UsernameNonUniqueException;
 import mx.amib.sistemas.membership.controller.rest.wrapper.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.codec.*;
 
 @RestController
 @RequestMapping("/user")
@@ -35,7 +38,7 @@ public class UserController {
 		return responseEntity;
 	}
 	
-	@RequestMapping(value="/{id}", method = RequestMethod.GET)
+	@RequestMapping(value="/get/{id}", method = RequestMethod.GET)
 	public ResponseEntity<UserTO> get(@PathVariable("id") long id){
 		ResponseEntity<UserTO> responseEntity;
 		UserTO userTO;
@@ -47,17 +50,18 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/save", method = RequestMethod.POST)
-	public ResponseEntity<UserTO> save(@RequestBody UserTO userTO){
+	public ResponseEntity<UserTO> save(@RequestBody UserTO userTO) throws NoSuchAlgorithmException, UsernameNonUniqueException{
 		ResponseEntity<UserTO> responseEntity;
+		byte[] decodedBytes;
 		User user = new User();
 		
 		user = UserTransportConverter.setValuesOnEntity(user, userTO);
-		try {
-			userTO =  UserTransportConverter.convertToTransport(userService.save(user));
-			responseEntity = new ResponseEntity<UserTO>( userTO, HttpStatus.OK );
-		} catch (WrongPasswordAlgorithm e) {
-			responseEntity = new ResponseEntity<UserTO>( HttpStatus.INTERNAL_SERVER_ERROR );
-		}
+		//decodifica el password base64 recibido
+		decodedBytes = Base64.decode(userTO.getPassword().getBytes());
+		user.setPassword(new String(decodedBytes, Charset.forName("UTF-8")));
+	    
+		userTO =  UserTransportConverter.convertToTransport(userService.save(user));
+		responseEntity = new ResponseEntity<UserTO>( userTO, HttpStatus.OK );
 		
 		return responseEntity;
 	}
@@ -77,15 +81,11 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/{id}/password/update", method = RequestMethod.POST)
-	public ResponseEntity<Boolean> updatePassword(@PathVariable("id") long id, @RequestBody UpdatePasswordRequestWrapper reqwrp){
+	public ResponseEntity<Boolean> updatePassword(@PathVariable("id") long id, @RequestBody UpdatePasswordRequestWrapper reqwrp) throws NoSuchAlgorithmException{
 		ResponseEntity<Boolean> responseEntity;
 		
-		try {
-			userService.updatePassword(id, reqwrp.getPassword());
-			responseEntity = new ResponseEntity<Boolean>( true, HttpStatus.OK );
-		} catch (WrongPasswordAlgorithm e) {
-			responseEntity = new ResponseEntity<Boolean>( HttpStatus.INTERNAL_SERVER_ERROR );
-		}
+		userService.updatePassword(id, reqwrp.getPassword());
+		responseEntity = new ResponseEntity<Boolean>( true, HttpStatus.OK );
 		
 		return responseEntity;
 	}

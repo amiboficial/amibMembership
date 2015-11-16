@@ -66,6 +66,9 @@ public class UserTransportConverter {
 
 		obj.setFailedAttempts(tobj.getFailedAttempts());
 		obj.setFailedAnswerAttempts(tobj.getFailedAnswerAttempts());
+		
+		obj.setComment( tobj.getComment() );
+		
 		return obj;
 	}
 }
