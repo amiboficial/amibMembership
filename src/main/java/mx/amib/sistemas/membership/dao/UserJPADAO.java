@@ -124,7 +124,7 @@ public class UserJPADAO implements UserDAO {
 	}
 	private String filterSortParam(String sort){
 		if(sort != null){
-			sort = sort.toLowerCase().trim();
+			//sort = sort.toLowerCase().trim();
 			try{
 				User.class.getDeclaredField(sort);
 			}
@@ -140,7 +140,7 @@ public class UserJPADAO implements UserDAO {
 	private String filterOrderParam(String order){
 		if(order != null){
 			order = order.toLowerCase().trim();
-			if(order != "asc" && order != "desc"){
+			if(order.compareToIgnoreCase("asc") != 0 && order.compareToIgnoreCase("desc") != 0){
 				order = "asc";
 			}
 		}
