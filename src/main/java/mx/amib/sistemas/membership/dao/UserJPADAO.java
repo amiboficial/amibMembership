@@ -152,6 +152,9 @@ public class UserJPADAO implements UserDAO {
 	
 	private String filterUserNameParam(String userName){
 		if(userName != null){
+			userName = userName.trim();
+		}
+		else{
 			userName = "";
 		}
 		return userName;
