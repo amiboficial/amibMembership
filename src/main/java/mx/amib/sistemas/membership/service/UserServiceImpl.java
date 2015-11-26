@@ -78,6 +78,7 @@ public class UserServiceImpl implements UserService{
 		return userDAO.update(user);
 	}
 
+	@Transactional
 	public void updatePassword(long id, String cleanPassword) throws NoSuchAlgorithmException{
 		User user = null;
 		

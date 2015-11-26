@@ -83,8 +83,11 @@ public class UserController {
 	@RequestMapping(value="/{id}/password/update", method = RequestMethod.POST)
 	public ResponseEntity<Boolean> updatePassword(@PathVariable("id") long id, @RequestBody UpdatePasswordRequestWrapper reqwrp) throws NoSuchAlgorithmException{
 		ResponseEntity<Boolean> responseEntity;
+		byte[] decodedBytes;
 		
-		userService.updatePassword(id, reqwrp.getPassword());
+		//decodifica el password base64 recibido
+		decodedBytes = Base64.decode(reqwrp.getPassword().getBytes());
+		userService.updatePassword(id, new String(decodedBytes, Charset.forName("UTF-8")));
 		responseEntity = new ResponseEntity<Boolean>( true, HttpStatus.OK );
 		
 		return responseEntity;
